@@ -22,19 +22,10 @@ omec-control-plane:
 5g-control-plane:
   enable5G: true
   images:
-    repository: "docker.io/"
-    tags:
-      amf: coranlabs/hexa-amf:v1.0.0
-      ausf: coranlabs/hexa-ausf:v1.0.0
-      nrf: coranlabs/hexa-nrf:v1.0.0
-      nssf: coranlabs/hexa-nssf:v1.0.0
-      pcf: coranlabs/hexa-pcf:v1.0.0
-      smf: coranlabs/hexa-smf:v1.0.0
-      udm: coranlabs/hexa-udm:v1.0.0
-      udr: coranlabs/hexa-udr:v1.0.0
-      init: coranlabs/pod-init:v1.0.0
-      metricfunc: coranlabs/metricfunc:v1.0.0 
-      webui: coranlabs/webui:v1.0.0
+    repository: ""    # defaults to Docker Hub
+    #tags:
+    #  amf: <amf image tag>
+    # refer to above Helm Chart to add other NF images
      
    # refer above helm chart to add other NF images
 
@@ -114,10 +105,9 @@ omec-control-plane:
 omec-sub-provision:
   enable: true
   images:
-    repository: "docker.io/"
-    tags:
-      init: coranlabs/pod-init:v1.0.0
-      simapp: coranlabs/simapp:v1.0.0
+    repository: ""    # defaults to Docker Hub
+    #tags:
+    #  simapp: #add simapp override image
 
   config:
     simapp:
@@ -169,7 +159,7 @@ omec-sub-provision:
                 - "001010100007500"
               ip-domain-name: "pool1"
               ip-domain-expanded:
-                dnn: hexa
+                dnn: internet
                 dns-primary: "8.8.8.8" # Change this as per your need. This value is sent to UE
                 mtu: 1460 # This value is sent to UE/Mobile/Subscriber during Subscriber PDU Session Est
                 ue-ip-pool: "172.250.1.0/16" # IP address pool for subscribers
@@ -183,7 +173,7 @@ omec-sub-provision:
                     arp: 6
                     pdb: 300
                     pelr: 6
-              site-info: "hexa"
+              site-info: "enterprise"
             #configure only 1 device group if you want UPF to allocate UE address.
             #if smf is allocating IP address then having 2 separate pools is not a problem.
             - name:  "5g-ue-02" # second device Group
@@ -200,7 +190,7 @@ omec-sub-provision:
                 - "001010100007510"
               ip-domain-name: "pool2"
               ip-domain-expanded:
-                dnn: hexa
+                dnn: internet
                 dns-primary: "8.8.8.8" # Change this as per your need. This value is sent to UE
                 mtu: 1460 # This value is sent to UE/Mobile/Subscriber during Subscriber PDU Session Est
                 ue-ip-pool: "172.250.1.0/16" # IP address pool for subscribers
@@ -214,9 +204,9 @@ omec-sub-provision:
                     arp: 6
                     pdb: 300
                     pelr: 6
-              site-info: "hexa"
+              site-info: "enterprise"
             network-slices:
-            - name: "hexa-slice-01" #provide any unique slice name
+            - name: "default" #provide any unique slice name
               slice-id: #make sure this slice matches with slice configured in gNB, UE
                 sd: "010203"
                 sst: 1
@@ -234,14 +224,14 @@ omec-sub-provision:
               site-info:
                 # Provide gNBs and UPF details and also PLMN for the site
                 gNodeBs:
-                - name: "hexa-gnb-01"
+                - name: "gnb1"
                   tac: 1
-                - name: "hexa-gnb-02"
+                - name: "gnb2"
                   tac: 2
                 plmn:
                   mcc: "001"
                   mnc: "01"
-                site-name: "hexa"
+                site-name: "enterprise"
                 upf:
                   upf-name: "eupf"  # associated UPF for this slice. One UPF per Slice. Provide fully qualified name
                   upf-port: 8805
@@ -287,8 +277,8 @@ omec-user-plane:
           log_level: "trace"
           gtppsc: true #extension header is enabled in 5G. Sending QFI in pdu session extension header
           cpiface:
-            dnn: "hexa" #keep it matching with Slice dnn
-            hostname: "upf"
+            dnn: "internet" #keep it matching with Slice dnn
+            hostname: "eupf"
             #http_port: "8080"
             enable_ue_ip_alloc: false # if true then it means UPF allocates address from below pool
             ue_ip_pool: "172.250.0.0/16" # UE ip pool is used if enable_ue_ip_alloc is set to true
